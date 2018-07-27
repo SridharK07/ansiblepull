@@ -1,0 +1,36 @@
+---
+
+- name: set microsoft repo
+  yum_repository:
+    name: powershell
+    file: powershell
+    description: microsoft powershell
+    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+    baseurl: https://packages.microsoft.com/yumrepos/microsoft-rhel7.3-prod/
+
+- name: install powershell
+  yum:
+    name: powershell
+    state: latest
+  when:
+    - ansible_pkg_mgr == 'yum'
+
+- name: install omi and remoting
+  yum:
+    name: "{{ item }}"
+  with_items:
+  - omi
+  - omi-psrp-server
+  when:
+    - ansible_pkg_mgr == 'yum'
+
+- name: install powershell and winrm
+  dnf:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - powershell
+    - omi
+    - omi-psrp-server
+  when:
+    - ansible_pkg_mgr == 'dnf'
